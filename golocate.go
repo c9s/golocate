@@ -20,6 +20,7 @@ type IndexDb struct {
 }
 
 func (p * IndexDb) AddIgnore(pattern string) error {
+  p.ignores = append(p.ignores,pattern)
   return nil
 }
 
@@ -56,6 +57,7 @@ func main() {
 
   db := IndexDb{}
   if *flagIndex {
+	db.AddIgnore(".git")
 	db.MakeIndex(root)
   } else {
 	// search from index
