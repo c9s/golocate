@@ -8,7 +8,7 @@ import (
   "fmt"
   "bytes"
   "encoding/gob"
-  // "log"
+  "log"
 )
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -31,11 +31,13 @@ func (p * IndexDb) MakeIndex(root string) error {
   var buf bytes.Buffer        // Stand-in for a network connection
   enc := gob.NewEncoder(&buf) // Will write to network.
   var err error = filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
-
-	fmt.Printf("Visited: %s %d\n", path, f.Size() )
-	return nil
+    var encodeErr error = enc.Encode(path)
+    if encodeErr != nil {
+        log.Fatal("encode error:", encodeErr)
+    }
+    fmt.Printf("Visited: %s %d\n", path, f.Size() )
+    return nil
   })
-
   _ = enc
   return err
 }
@@ -50,14 +52,14 @@ func main() {
   stdout = bufio.NewWriter(os.Stdout)
 
   flag.Usage = func() {
-	fmt.Fprintf(stderr, "Usage: --index", os.Args[0])
-	os.Exit(1)
+    fmt.Fprintf(stderr, "Usage: --index", os.Args[0])
+    os.Exit(1)
   }
   flag.Parse()
 
   /*
   if len(flag.Args()) == 0 {
-	fmt.Printf("Usage")
+    fmt.Printf("Usage")
   }
   */
   root := flag.Arg(0)
@@ -65,10 +67,10 @@ func main() {
 
   db := IndexDb{}
   if *flagIndex {
-	db.AddIgnore(".git")
-	db.MakeIndex(root)
+    db.AddIgnore(".git")
+    db.MakeIndex(root)
   } else {
-	// search from index
+    // search from index
   }
 
   // err := filepath.Walk(root, visit)
