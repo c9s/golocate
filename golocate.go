@@ -33,11 +33,19 @@ func (p * IndexDb) MakeIndex(root string) error {
   var err error = filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
     var encodeErr error = enc.Encode(path)
     if encodeErr != nil {
-        log.Fatal("encode error:", encodeErr)
+      log.Fatal("encode error:", encodeErr)
     }
     fmt.Printf("Visited: %s %d\n", path, f.Size() )
     return nil
   })
+
+  // write buffer to an index file
+  var indexFileName string = ".golocate.db"
+  file, err := os.Create(indexFileName)
+  file.Write( buf.Bytes() )
+  file.Close()
+
+  _ = file
   _ = enc
   return err
 }
