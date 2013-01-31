@@ -6,6 +6,9 @@ import (
   "os"
   "flag"
   "fmt"
+  "bytes"
+  "encoding/gob"
+  // "log"
 )
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -25,10 +28,15 @@ func (p * IndexDb) AddIgnore(pattern string) error {
 }
 
 func (p * IndexDb) MakeIndex(root string) error {
+  var buf bytes.Buffer        // Stand-in for a network connection
+  enc := gob.NewEncoder(&buf) // Will write to network.
   var err error = filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+
 	fmt.Printf("Visited: %s %d\n", path, f.Size() )
 	return nil
   })
+
+  _ = enc
   return err
 }
 
