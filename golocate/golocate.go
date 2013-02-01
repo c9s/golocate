@@ -40,11 +40,11 @@ func main() {
   db.PrepareStructure()
 
   if *flagIndex {
-    db.AddIgnoreString(".DS_Store")
-    db.AddIgnoreString(".git")
-    db.AddIgnoreString(".svn")
-    db.AddIgnoreString(".hg")
-    db.AddIgnoreString(".sass-cache")
+    db.IgnoreString(".DS_Store")
+    db.IgnoreString(".git")
+    db.IgnoreString(".svn")
+    db.IgnoreString(".hg")
+    db.IgnoreString(".sass-cache")
 
     log.Println("Building index")
 

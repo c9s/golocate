@@ -39,15 +39,15 @@ func (p * IndexDb) SetVerbose() {
   p.verbose = true
 }
 
-func (p * IndexDb) AddIgnorePattern(pattern string) {
+func (p * IndexDb) IgnorePattern(pattern string) {
   p.IgnorePatterns = append(p.IgnorePatterns,pattern)
 }
 
-func (p * IndexDb) AddIgnoreString(pattern string) {
+func (p * IndexDb) IgnoreString(pattern string) {
   p.IgnoreStrings = append(p.IgnoreStrings, pattern)
 }
 
-func (p * IndexDb) AddIgnoreFilename(filename string) {
+func (p * IndexDb) IgnoreFilename(filename string) {
   p.IgnoreFilenames = append(p.IgnoreFilenames,filename)
 }
 
