@@ -1,4 +1,4 @@
-package main
+package golocate
 
 import (
   "regexp"
@@ -141,9 +141,7 @@ func (p * IndexDb) WriteIndexFile() error {
   file.Write( buf.Bytes() )
   file.Close()
 
-  if p.verbose {
-    log.Println("Done")
-  }
+  log.Println("Done")
   return err
 }
 

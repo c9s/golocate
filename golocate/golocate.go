@@ -1,6 +1,7 @@
 package main
 
 import (
+  "golocate"
   "os"
   "flag"
   "fmt"
@@ -29,7 +30,7 @@ func main() {
   }
   */
 
-  db := IndexDb{}
+  db := golocate.IndexDb{}
 
   if *flagVerbose {
     db.SetVerbose()
