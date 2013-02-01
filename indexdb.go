@@ -94,7 +94,8 @@ func (p * IndexDb) MakeIndex(paths []string) {
   }
 
   // waiting for all goroutines finish
-  for i := 0 ; i < len(paths); i++ {
+  var waiting int = len(paths)
+  for ; waiting > 0 ; waiting-- {
     <-done
   }
   close(filepipe)
@@ -116,7 +117,6 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
 
     var fileitem FileItem = FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
     ch <- &fileitem
-
     return nil
   })
   return  err
