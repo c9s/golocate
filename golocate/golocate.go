@@ -44,9 +44,14 @@ func main() {
     db.AddIgnoreString(".git")
     db.AddIgnoreString(".svn")
     db.AddIgnoreString(".hg")
+    db.AddIgnoreString(".sass-cache")
 
     log.Println("Building index")
-    db.MakeIndex( flag.Args() )
+
+    for _ , path := range flag.Args() {
+      db.AddSourcePath(path)
+    }
+    db.MakeIndex()
     db.WriteIndexFile()
   } else {
     // search from index

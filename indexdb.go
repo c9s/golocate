@@ -20,9 +20,15 @@ type IndexDb struct {
   createtime int32
   // paths []string
   FileItems []FileItem
+  SourcePaths   []string
+  IgnoreFilenames []string
   IgnoreStrings []string
   IgnorePatterns []string
   verbose bool
+}
+
+func (p * IndexDb) AddSourcePath(path string) {
+  p.SourcePaths = append(p.SourcePaths, path)
 }
 
 func (p * IndexDb) GetLocateDbDir() string {
@@ -39,6 +45,10 @@ func (p * IndexDb) AddIgnorePattern(pattern string) {
 
 func (p * IndexDb) AddIgnoreString(pattern string) {
   p.IgnoreStrings = append(p.IgnoreStrings, pattern)
+}
+
+func (p * IndexDb) AddIgnoreFilename(filename string) {
+  p.IgnoreFilenames = append(p.IgnoreFilenames,filename)
 }
 
 func (p * IndexDb) fileAcceptable(path string) bool {
@@ -64,7 +74,7 @@ func (p * IndexDb) SearchFile(pattern string) {
 
 }
 
-func (p * IndexDb) MakeIndex(paths []string) {
+func (p * IndexDb) MakeIndex() {
   var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
 
@@ -81,7 +91,7 @@ func (p * IndexDb) MakeIndex(paths []string) {
   }()
 
   var path string
-  for _ , path = range paths {
+  for _ , path = range p.SourcePaths {
     log.Println("Building index from " + path)
     // Launch Goroutine
     go func(path string) {
@@ -94,7 +104,7 @@ func (p * IndexDb) MakeIndex(paths []string) {
   }
 
   // waiting for all goroutines finish
-  var waiting int = len(paths)
+  var waiting int = len(p.SourcePaths)
   for ; waiting > 0 ; waiting-- {
     <-done
   }
