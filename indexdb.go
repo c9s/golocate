@@ -101,6 +101,7 @@ func (p * IndexDb) WriteIndexFile() error {
     log.Fatal("encode error:", encodeErr)
   }
 
+  // write index to file
   var indexFileName string = p.GetLocateDbDir() + "/db"
   file, err := os.Create(indexFileName)
   file.Write( buf.Bytes() )

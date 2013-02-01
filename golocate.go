@@ -4,6 +4,7 @@ import (
   "os"
   "flag"
   "fmt"
+  "log"
 )
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -33,6 +34,8 @@ func main() {
   if *flagVerbose {
     db.SetVerbose()
   }
+
+  log.Println("Preparing golocate db structure...")
   db.PrepareStructure()
 
   if *flagIndex {
@@ -43,6 +46,7 @@ func main() {
 
     var dir string
     for _ , dir = range flag.Args() {
+      log.Println("Building index from " + dir)
       db.MakeIndex(dir)
     }
     db.WriteIndexFile()
