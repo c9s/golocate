@@ -39,17 +39,28 @@ func (p * IndexDb) AddIgnoreString(pattern string) {
   p.IgnoreStrings = append(p.IgnoreStrings, pattern)
 }
 
-func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
+func (p * IndexDb) fileAcceptable(path string) bool {
   for _, str := range p.IgnoreStrings {
     if strings.Contains(path,str) {
-      return nil
+      return false
     }
   }
 
   for _, pattern := range p.IgnorePatterns {
     if m, _ := regexp.MatchString(pattern, path); m {
-      return nil
+      return false
     }
+  }
+  return true
+}
+
+func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
+  if ! p.fileAcceptable(path) {
+    log.Println("Skip " + path)
+    if fi.IsDir() {
+      return filepath.SkipDir
+    }
+    return nil
   }
 
   fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
@@ -57,7 +68,7 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   p.Files = append(p.Files, fileitem)
 
   if p.verbose {
-    log.Printf("Added: %s %d\n", path, fi.Size() )
+    log.Printf("Added: %s %s\n", path, PrettySize( int(fi.Size()) ) )
   }
   return nil
 }
@@ -72,8 +83,7 @@ func (p * IndexDb) SearchFile(pattern string) {
 
 func (p * IndexDb) MakeIndex(root string) error {
   return filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
-    p.AddFile(path,fi)
-    return nil
+    return p.AddFile(path,fi)
   })
 }
 
