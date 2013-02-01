@@ -10,7 +10,7 @@ type FileItem struct {
     Size int64
 }
 
-func Concat(old1, old2 []FileItem) []FileItem {
+func ConcatFileItems(old1, old2 []FileItem) []FileItem {
    newslice := make([]FileItem, len(old1) + len(old2))
    copy(newslice, old1)
    copy(newslice[len(old1):], old2)

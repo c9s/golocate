@@ -18,7 +18,7 @@ const (
 type IndexDb struct {
   createtime int32
   // paths []string
-  Files []FileItem
+  FileItems []FileItem
   IgnoreStrings []string
   IgnorePatterns []string
   verbose bool
@@ -64,19 +64,20 @@ func (p * IndexDb) SearchFile(pattern string) {
 }
 
 func (p * IndexDb) MakeIndex(paths []string) {
+  var ch = make(chan []FileItem, 10)
   var path string
   for _ , path = range paths {
     log.Println("Building index from " + path)
-    fileitems, err := p.TraverseDirectory(path)
+    fileitems, err := p.TraverseDirectory(path,ch)
     if err != nil {
       log.Fatal(err)
       continue
     }
-    p.Files = Concat(p.Files, fileitems)
+    p.FileItems = ConcatFileItems(p.FileItems, fileitems)
   }
 }
 
-func (p * IndexDb) TraverseDirectory(root string) ([]FileItem, error) {
+func (p * IndexDb) TraverseDirectory(root string, ch chan []FileItem) ([]FileItem, error) {
   var fileitems []FileItem
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     if ! p.fileAcceptable(path) {
