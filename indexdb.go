@@ -8,6 +8,7 @@ import (
   "encoding/gob"
   "path/filepath"
   "os"
+  "fmt"
 )
 
 const (
@@ -56,7 +57,7 @@ func (p * IndexDb) fileAcceptable(path string) bool {
 
 func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   if ! p.fileAcceptable(path) {
-    log.Println("Skip " + path)
+    fmt.Println("  Skip\t" + path)
     if fi.IsDir() {
       return filepath.SkipDir
     }
@@ -68,7 +69,7 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   p.Files = append(p.Files, fileitem)
 
   if p.verbose {
-    log.Printf("Added: %s %s\n", path, PrettySize( int(fi.Size()) ) )
+    fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fi.Size()) ) )
   }
   return nil
 }
