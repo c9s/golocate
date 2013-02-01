@@ -8,11 +8,10 @@ import (
   "encoding/gob"
   "path/filepath"
   "os"
-  _ "fmt"
 )
 
 const (
-  LocateDbDir = ".golocate"
+  LocateDbDirName = ".golocate"
 )
 
 type IndexDb struct {
@@ -22,6 +21,10 @@ type IndexDb struct {
   IgnoreStrings []string
   IgnorePatterns []string
   verbose bool
+}
+
+func (p * IndexDb) GetLocateDbDir() string {
+  return os.Getenv("HOME") + "/" + LocateDbDirName
 }
 
 func (p * IndexDb) SetVerbose() {
@@ -60,7 +63,7 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
 }
 
 func (p * IndexDb) PrepareStructure() error {
-  return os.Mkdir(".golocate",0777)
+  return os.Mkdir( p.GetLocateDbDir() ,0777)
 }
 
 func (p * IndexDb) SearchFile(pattern string) {
@@ -87,7 +90,7 @@ func (p * IndexDb) WriteIndexFile() error {
     log.Fatal("encode error:", encodeErr)
   }
 
-  var indexFileName string = LocateDbDir + "/db"
+  var indexFileName string = p.GetLocateDbDir() + "/db"
   file, err := os.Create(indexFileName)
   file.Write( buf.Bytes() )
   file.Close()
