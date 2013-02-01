@@ -10,6 +10,13 @@ type FileItem struct {
     Size int64
 }
 
+func Concat(old1, old2 []FileItem) []FileItem {
+   newslice := make([]FileItem, len(old1) + len(old2))
+   copy(newslice, old1)
+   copy(newslice[len(old1):], old2)
+   return newslice
+}
+
 func PrettySize(bytes int) string {
   if bytes < 1024 {
     return strconv.Itoa(bytes) + "B"

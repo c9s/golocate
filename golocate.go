@@ -47,7 +47,9 @@ func main() {
     var dir string
     for _ , dir = range flag.Args() {
       log.Println("Building index from " + dir)
-      db.MakeIndex(dir)
+      fileitems, err := db.MakeIndex(dir)
+      _ = fileitems
+      _ = err
     }
     db.WriteIndexFile()
   } else {

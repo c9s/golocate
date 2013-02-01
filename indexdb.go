@@ -55,25 +55,6 @@ func (p * IndexDb) fileAcceptable(path string) bool {
   return true
 }
 
-func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
-  if ! p.fileAcceptable(path) {
-    fmt.Println("  Skip\t" + path)
-    if fi.IsDir() {
-      return filepath.SkipDir
-    }
-    return nil
-  }
-
-  fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
-  // use regexp to compare the results
-  p.Files = append(p.Files, fileitem)
-
-  if p.verbose {
-    fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fi.Size()) ) )
-  }
-  return nil
-}
-
 func (p * IndexDb) PrepareStructure() error {
   return os.Mkdir( p.GetLocateDbDir() ,0777)
 }
@@ -82,10 +63,25 @@ func (p * IndexDb) SearchFile(pattern string) {
 
 }
 
-func (p * IndexDb) MakeIndex(root string) error {
-  return filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
-    return p.AddFile(path,fi)
+func (p * IndexDb) MakeIndex(root string) ([]FileItem, error) {
+  var fileitems []FileItem
+  var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
+    if ! p.fileAcceptable(path) {
+      fmt.Println("  Skip\t" + path)
+      if fi.IsDir() {
+        return filepath.SkipDir
+      }
+      return nil
+    }
+
+    fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+    fileitems = append(fileitems,fileitem)
+    if p.verbose {
+      fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fi.Size()) ) )
+    }
+    return nil
   })
+  return fileitems, err
 }
 
 // write buffer to an index file
