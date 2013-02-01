@@ -27,8 +27,6 @@ func main() {
     fmt.Printf("Usage")
   }
   */
-  root := flag.Arg(0)
-  _ = root
 
   db := IndexDb{}
 
@@ -42,13 +40,16 @@ func main() {
     db.AddIgnoreString(".git")
     db.AddIgnoreString(".svn")
     db.AddIgnoreString(".hg")
-    db.MakeIndex(root)
+
+    var dir string
+    for _ , dir = range flag.Args() {
+      db.MakeIndex(dir)
+    }
     db.WriteIndexFile()
   } else {
     // search from index
   }
 
-  // err := filepath.Walk(root, visit)
   _ = db
   _ = flagIndex
   // fmt.Printf("filepath.Walk() returned %v\n", err)
