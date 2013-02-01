@@ -1,7 +1,6 @@
 package main
 
 import (
-  "bufio"
   "os"
   "flag"
   "fmt"
@@ -13,18 +12,12 @@ func visit(path string, f os.FileInfo, err error) error {
 }
 
 
-var stdout *bufio.Writer
-var stderr *bufio.Writer
-
 func main() {
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
   var flagIndex *bool = flag.Bool("i",false,"Create index file")
 
-  stderr = bufio.NewWriter(os.Stderr)
-  stdout = bufio.NewWriter(os.Stdout)
-
   flag.Usage = func() {
-    fmt.Fprintf(stderr, "Usage: --index", os.Args[0])
+    fmt.Printf("Usage: --index", os.Args[0])
     os.Exit(1)
   }
   flag.Parse()
