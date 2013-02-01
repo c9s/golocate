@@ -63,7 +63,20 @@ func (p * IndexDb) SearchFile(pattern string) {
 
 }
 
-func (p * IndexDb) MakeIndex(root string) ([]FileItem, error) {
+func (p * IndexDb) MakeIndex(paths []string) {
+  var path string
+  for _ , path = range paths {
+    log.Println("Building index from " + path)
+    fileitems, err := p.TraverseDirectory(path)
+    if err != nil {
+      log.Fatal(err)
+      continue
+    }
+    p.Files = Concat(p.Files, fileitems)
+  }
+}
+
+func (p * IndexDb) TraverseDirectory(root string) ([]FileItem, error) {
   var fileitems []FileItem
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     if ! p.fileAcceptable(path) {

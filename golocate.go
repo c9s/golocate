@@ -44,13 +44,8 @@ func main() {
     db.AddIgnoreString(".svn")
     db.AddIgnoreString(".hg")
 
-    var dir string
-    for _ , dir = range flag.Args() {
-      log.Println("Building index from " + dir)
-      fileitems, err := db.MakeIndex(dir)
-      _ = fileitems
-      _ = err
-    }
+    log.Println("Building index")
+    db.MakeIndex( flag.Args() )
     db.WriteIndexFile()
   } else {
     // search from index
