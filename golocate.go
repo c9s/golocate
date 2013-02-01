@@ -37,6 +37,9 @@ func main() {
   _ = root
 
   db := IndexDb{}
+
+  db.PrepareStructure()
+
   if *flagIndex {
     db.AddIgnoreString(".git")
     db.AddIgnoreString(".svn")

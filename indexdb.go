@@ -11,6 +11,10 @@ import (
   "fmt"
 )
 
+const (
+  LocateDbDir = ".golocate"
+)
+
 type IndexDb struct {
   createtime int32
   // paths []string
@@ -46,6 +50,10 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   return nil
 }
 
+func (p * IndexDb) PrepareStructure() {
+  os.Mkdir(".golocate",0777)
+}
+
 func (p * IndexDb) SearchFile(pattern string) {
 }
 
@@ -64,10 +72,15 @@ func (p * IndexDb) MakeIndex(root string) error {
   })
 
   // write buffer to an index file
-  var indexFileName string = ".golocate.db"
+
+  log.Println("Writing index file...")
+
+  var indexFileName string = LocateDbDir + "/db"
   file, err := os.Create(indexFileName)
   file.Write( buf.Bytes() )
   file.Close()
   _ = enc
+
+  log.Println("Done")
   return err
 }
