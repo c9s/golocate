@@ -79,17 +79,15 @@ func (p * IndexDb) MakeIndex(root string) error {
     return nil
   })
 
-  // write buffer to an index file
-
-
   p.WriteIndexFile(buf)
   return err
 }
 
 
+// write buffer to an index file
 func (p * IndexDb) WriteIndexFile(buf bytes.Buffer) error {
   if p.verbose {
-	log.Println("Writing index file...")
+    log.Println("Writing index file...")
   }
 
   var indexFileName string = LocateDbDir + "/db"
