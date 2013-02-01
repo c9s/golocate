@@ -21,10 +21,11 @@ type IndexDb struct {
   files []FileItem
   ignoreStrings []string
   ignorePatterns []string
+  verbose bool
 }
 
 func (p * IndexDb) SetVerbose() {
-
+  p.verbose = true
 }
 
 func (p * IndexDb) AddIgnorePattern(pattern string) {
@@ -71,13 +72,18 @@ func (p * IndexDb) MakeIndex(root string) error {
     if encodeErr != nil {
       log.Fatal("encode error:", encodeErr)
     }
-    log.Printf("Visited: %s %d\n", path, fi.Size() )
+
+	if p.verbose {
+	  log.Printf("Visited: %s %d\n", path, fi.Size() )
+	}
     return nil
   })
 
   // write buffer to an index file
 
-  log.Println("Writing index file...")
+  if p.verbose {
+	log.Println("Writing index file...")
+  }
 
   var indexFileName string = LocateDbDir + "/db"
   file, err := os.Create(indexFileName)
@@ -85,6 +91,8 @@ func (p * IndexDb) MakeIndex(root string) error {
   file.Close()
   _ = enc
 
-  log.Println("Done")
+  if p.verbose {
+	log.Println("Done")
+  }
   return err
 }

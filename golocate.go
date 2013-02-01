@@ -17,7 +17,7 @@ var stdout *bufio.Writer
 var stderr *bufio.Writer
 
 func main() {
-  var flagVerbose *bool = flag.Bool("v",true,"Verbose output")
+  var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
   var flagIndex *bool = flag.Bool("i",false,"Create index file")
 
   stderr = bufio.NewWriter(os.Stderr)
