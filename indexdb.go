@@ -64,33 +64,43 @@ func (p * IndexDb) SearchFile(pattern string) {
 }
 
 func (p * IndexDb) MakeIndex(paths []string) {
-  var ch = make(chan FileItem, 10)
-  var path string
+  var filepipe = make(chan *FileItem, 10)
+  var done = make(chan bool, 5)
 
   go func() {
-    fileitem := <- ch
-    for {
-      p.FileItems = append(p.FileItems,fileitem)
-      fileitem = <- ch
-
+    var fileitem *FileItem
+    for fileitem = <-filepipe ; fileitem != nil ; {
+      p.FileItems = append(p.FileItems,*fileitem)
       if p.verbose {
-        fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fileitem.Size) ) )
+        fmt.Printf("  Add\t%s %s\n", fileitem.Path, PrettySize( int(fileitem.Size) ) )
       }
+      fileitem = <-filepipe
     }
-    // p.FileItems = ConcatFileItems(p.FileItems, fileitems)
+    done <- true
   }()
 
-  for _ , path = range paths {
+  for tid , path := range paths {
     log.Println("Building index from " + path)
-    err := p.TraverseDirectory(path,ch)
-    if err != nil {
-      log.Fatal(err)
-      continue
-    }
+    // Launch Goroutine
+    go func() {
+      err := p.TraverseDirectory(path,filepipe)
+      if err != nil {
+        log.Fatal(err)
+      }
+      done <- true
+    }()
   }
+
+  // waiting for all goroutines finish
+  for i := 0 ; i < len(paths); i++ {
+    <-done
+  }
+  close(filepipe)
+  <-done
+  fmt.Printf("all finished.\n")
 }
 
-func (p * IndexDb) TraverseDirectory(root string, ch chan FileItem) (error) {
+func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     if ! p.fileAcceptable(path) {
       fmt.Println("  Skip\t" + path)
@@ -100,8 +110,8 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan FileItem) (error) {
       return nil
     }
 
-    fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
-    ch <- fileitem
+    var fileitem FileItem = FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+    ch <- &fileitem
 
     return nil
   })
