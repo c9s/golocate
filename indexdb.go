@@ -13,6 +13,7 @@ import (
 
 const (
   LocateDbDirName = ".golocate"
+  FilePipeBufferLength = 10
 )
 
 type IndexDb struct {
@@ -64,7 +65,7 @@ func (p * IndexDb) SearchFile(pattern string) {
 }
 
 func (p * IndexDb) MakeIndex(paths []string) {
-  var filepipe = make(chan *FileItem, 10)
+  var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
 
   go func() {
@@ -79,16 +80,17 @@ func (p * IndexDb) MakeIndex(paths []string) {
     done <- true
   }()
 
-  for tid , path := range paths {
+  var path string
+  for _ , path = range paths {
     log.Println("Building index from " + path)
     // Launch Goroutine
-    go func() {
+    go func(path string) {
       err := p.TraverseDirectory(path,filepipe)
       if err != nil {
         log.Fatal(err)
       }
       done <- true
-    }()
+    }(path)
   }
 
   // waiting for all goroutines finish
@@ -97,13 +99,15 @@ func (p * IndexDb) MakeIndex(paths []string) {
   }
   close(filepipe)
   <-done
-  fmt.Printf("all finished.\n")
 }
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     if ! p.fileAcceptable(path) {
-      fmt.Println("  Skip\t" + path)
+
+      if p.verbose {
+        fmt.Println("  Skip\t" + path)
+      }
       if fi.IsDir() {
         return filepath.SkipDir
       }
