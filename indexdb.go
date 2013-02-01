@@ -64,21 +64,33 @@ func (p * IndexDb) SearchFile(pattern string) {
 }
 
 func (p * IndexDb) MakeIndex(paths []string) {
-  var ch = make(chan []FileItem, 10)
+  var ch = make(chan FileItem, 10)
   var path string
+
+  go func() {
+    fileitem := <- ch
+    for {
+      p.FileItems = append(p.FileItems,fileitem)
+      fileitem = <- ch
+
+      if p.verbose {
+        fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fileitem.Size) ) )
+      }
+    }
+    // p.FileItems = ConcatFileItems(p.FileItems, fileitems)
+  }()
+
   for _ , path = range paths {
     log.Println("Building index from " + path)
-    fileitems, err := p.TraverseDirectory(path,ch)
+    err := p.TraverseDirectory(path,ch)
     if err != nil {
       log.Fatal(err)
       continue
     }
-    p.FileItems = ConcatFileItems(p.FileItems, fileitems)
   }
 }
 
-func (p * IndexDb) TraverseDirectory(root string, ch chan []FileItem) ([]FileItem, error) {
-  var fileitems []FileItem
+func (p * IndexDb) TraverseDirectory(root string, ch chan FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     if ! p.fileAcceptable(path) {
       fmt.Println("  Skip\t" + path)
@@ -89,13 +101,11 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan []FileItem) ([]FileIte
     }
 
     fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
-    fileitems = append(fileitems,fileitem)
-    if p.verbose {
-      fmt.Printf("  Add\t%s %s\n", path, PrettySize( int(fi.Size()) ) )
-    }
+    ch <- fileitem
+
     return nil
   })
-  return fileitems, err
+  return  err
 }
 
 // write buffer to an index file
