@@ -29,7 +29,7 @@ func (p * IndexDb) SetVerbose() {
 }
 
 func (p * IndexDb) AddIgnorePattern(pattern string) {
-
+  p.ignorePatterns = append(p.ignorePatterns,pattern)
 }
 
 func (p * IndexDb) AddIgnoreString(pattern string) {
@@ -55,19 +55,19 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   return nil
 }
 
-func (p * IndexDb) PrepareStructure() {
-  os.Mkdir(".golocate",0777)
+func (p * IndexDb) PrepareStructure() error {
+  return os.Mkdir(".golocate",0777)
 }
 
 func (p * IndexDb) SearchFile(pattern string) {
+
 }
 
-func (p * IndexDb) MakeIndex(root string) error {
+func (p * IndexDb) MakeIndex(root string) (bytes.Buffer,error) {
   var buf bytes.Buffer        // Stand-in for a network connection
   enc := gob.NewEncoder(&buf) // Will write to network.
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
     p.AddFile(path,fi)
-
     var encodeErr error = enc.Encode(path)
     if encodeErr != nil {
       log.Fatal("encode error:", encodeErr)
@@ -78,9 +78,7 @@ func (p * IndexDb) MakeIndex(root string) error {
     }
     return nil
   })
-
-  p.WriteIndexFile(buf)
-  return err
+  return buf,err
 }
 
 
