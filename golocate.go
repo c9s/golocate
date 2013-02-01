@@ -7,6 +7,8 @@ import (
   "flag"
   "fmt"
   "bytes"
+  "regexp"
+  "strings"
   "encoding/gob"
   "log"
 )
@@ -20,23 +22,45 @@ type IndexDb struct {
   createtime int32
   // paths []string
   files []FileItem
-  ignores []string
+  ignoreStrings []string
+  ignorePatterns []string
 }
 
-func (p * IndexDb) AddIgnore(pattern string) {
-  p.ignores = append(p.ignores,pattern)
+func (p * IndexDb) AddIgnorePattern(pattern string) {
+
 }
 
-func (p * IndexDb) AddFile(fileitem FileItem) {
+func (p * IndexDb) AddIgnoreString(pattern string) {
+  p.ignoreStrings = append(p.ignoreStrings, pattern)
+}
+
+func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
+  for _, str := range p.ignoreStrings {
+    if strings.Contains(path,str) {
+      return nil
+    }
+  }
+
+  for _, pattern := range p.ignorePatterns {
+    if m, _ := regexp.MatchString(pattern, path); m {
+      return nil
+    }
+  }
+
+  fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+  // use regexp to compare the results
   p.files = append(p.files, fileitem)
+  return nil
+}
+
+func (p * IndexDb) SearchFile(pattern string) {
 }
 
 func (p * IndexDb) MakeIndex(root string) error {
   var buf bytes.Buffer        // Stand-in for a network connection
   enc := gob.NewEncoder(&buf) // Will write to network.
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
-	fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
-	p.AddFile(fileitem)
+    p.AddFile(path,fi)
 
     var encodeErr error = enc.Encode(path)
     if encodeErr != nil {
@@ -80,9 +104,9 @@ func main() {
 
   db := IndexDb{}
   if *flagIndex {
-    db.AddIgnore(".git")
-    db.AddIgnore(".svn")
-    db.AddIgnore(".hg")
+    db.AddIgnoreString(".git")
+    db.AddIgnoreString(".svn")
+    db.AddIgnoreString(".hg")
     db.MakeIndex(root)
   } else {
     // search from index
