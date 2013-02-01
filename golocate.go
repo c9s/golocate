@@ -42,9 +42,8 @@ func main() {
     db.AddIgnoreString(".git")
     db.AddIgnoreString(".svn")
     db.AddIgnoreString(".hg")
-    buf,err := db.MakeIndex(root)
-    db.WriteIndexFile(buf)
-    _ = err
+    db.MakeIndex(root)
+    db.WriteIndexFile()
   } else {
     // search from index
   }
