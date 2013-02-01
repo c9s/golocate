@@ -8,7 +8,7 @@ import (
   "encoding/gob"
   "path/filepath"
   "os"
-  "fmt"
+  _ "fmt"
 )
 
 const (
@@ -21,6 +21,10 @@ type IndexDb struct {
   files []FileItem
   ignoreStrings []string
   ignorePatterns []string
+}
+
+func (p * IndexDb) SetVerbose() {
+
 }
 
 func (p * IndexDb) AddIgnorePattern(pattern string) {
@@ -67,7 +71,7 @@ func (p * IndexDb) MakeIndex(root string) error {
     if encodeErr != nil {
       log.Fatal("encode error:", encodeErr)
     }
-    fmt.Printf("Visited: %s %d\n", path, fi.Size() )
+    log.Printf("Visited: %s %d\n", path, fi.Size() )
     return nil
   })
 

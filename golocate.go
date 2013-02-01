@@ -17,7 +17,8 @@ var stdout *bufio.Writer
 var stderr *bufio.Writer
 
 func main() {
-  var flagIndex *bool = flag.Bool("index",false,"Create index file")
+  var flagVerbose *bool = flag.Bool("v",true,"Verbose output")
+  var flagIndex *bool = flag.Bool("i",false,"Create index file")
 
   stderr = bufio.NewWriter(os.Stderr)
   stdout = bufio.NewWriter(os.Stdout)
@@ -38,6 +39,9 @@ func main() {
 
   db := IndexDb{}
 
+  if *flagVerbose {
+    db.SetVerbose()
+  }
   db.PrepareStructure()
 
   if *flagIndex {
