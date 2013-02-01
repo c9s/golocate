@@ -73,9 +73,9 @@ func (p * IndexDb) MakeIndex(root string) error {
       log.Fatal("encode error:", encodeErr)
     }
 
-	if p.verbose {
-	  log.Printf("Visited: %s %d\n", path, fi.Size() )
-	}
+    if p.verbose {
+      log.Printf("Visited: %s %d\n", path, fi.Size() )
+    }
     return nil
   })
 
@@ -96,7 +96,7 @@ func (p * IndexDb) WriteIndexFile(buf bytes.Buffer) error {
   file.Close()
 
   if p.verbose {
-	log.Println("Done")
+    log.Println("Done")
   }
   return err
 }
