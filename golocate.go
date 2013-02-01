@@ -18,24 +18,31 @@ func visit(path string, f os.FileInfo, err error) error {
 
 type IndexDb struct {
   createtime int32
-  paths []string
+  // paths []string
+  files []FileItem
   ignores []string
 }
 
-func (p * IndexDb) AddIgnore(pattern string) error {
+func (p * IndexDb) AddIgnore(pattern string) {
   p.ignores = append(p.ignores,pattern)
-  return nil
+}
+
+func (p * IndexDb) AddFile(fileitem FileItem) {
+  p.files = append(p.files, fileitem)
 }
 
 func (p * IndexDb) MakeIndex(root string) error {
   var buf bytes.Buffer        // Stand-in for a network connection
   enc := gob.NewEncoder(&buf) // Will write to network.
-  var err error = filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+  var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
+	fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+	p.AddFile(fileitem)
+
     var encodeErr error = enc.Encode(path)
     if encodeErr != nil {
       log.Fatal("encode error:", encodeErr)
     }
-    fmt.Printf("Visited: %s %d\n", path, f.Size() )
+    fmt.Printf("Visited: %s %d\n", path, fi.Size() )
     return nil
   })
 
@@ -44,8 +51,6 @@ func (p * IndexDb) MakeIndex(root string) error {
   file, err := os.Create(indexFileName)
   file.Write( buf.Bytes() )
   file.Close()
-
-  _ = file
   _ = enc
   return err
 }
@@ -76,6 +81,8 @@ func main() {
   db := IndexDb{}
   if *flagIndex {
     db.AddIgnore(".git")
+    db.AddIgnore(".svn")
+    db.AddIgnore(".hg")
     db.MakeIndex(root)
   } else {
     // search from index
