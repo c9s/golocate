@@ -52,6 +52,9 @@ func (p * IndexDb) AddFile(path string, fi os.FileInfo) error {
   fileitem := FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
   // use regexp to compare the results
   p.files = append(p.files, fileitem)
+  if p.verbose {
+    log.Printf("Visited: %s %d\n", path, fi.Size() )
+  }
   return nil
 }
 
@@ -71,10 +74,6 @@ func (p * IndexDb) MakeIndex(root string) (bytes.Buffer,error) {
     var encodeErr error = enc.Encode(path)
     if encodeErr != nil {
       log.Fatal("encode error:", encodeErr)
-    }
-
-    if p.verbose {
-      log.Printf("Visited: %s %d\n", path, fi.Size() )
     }
     return nil
   })

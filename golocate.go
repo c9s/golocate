@@ -38,6 +38,7 @@ func main() {
   db.PrepareStructure()
 
   if *flagIndex {
+    db.AddIgnoreString(".DS_Store")
     db.AddIgnoreString(".git")
     db.AddIgnoreString(".svn")
     db.AddIgnoreString(".hg")
