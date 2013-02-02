@@ -132,8 +132,31 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   return  err
 }
 
+func (p * IndexDb) LoadIndexFile(filepath string) (error){
+  var buf bytes.Buffer
+  var dec *gob.Decoder = gob.NewDecoder(&buf)
+
+  // var content []byte, err error = ioutil.ReadFile(filepath)
+  file, err := os.Open(filepath)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  _, err = buf.ReadFrom(file)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  // db := IndexDb{}
+  var decodeErr error = dec.Decode(p)
+  if decodeErr != nil {
+    log.Fatal("decode error:", decodeErr)
+  }
+  return err
+}
+
 // write buffer to an index file
-func (p * IndexDb) WriteIndexFile() error {
+func (p * IndexDb) WriteIndexFile(filepath string) error {
   if p.verbose {
     log.Println("Writing index file...")
   }
@@ -145,9 +168,7 @@ func (p * IndexDb) WriteIndexFile() error {
     log.Fatal("encode error:", encodeErr)
   }
 
-  // write index to file
-  var indexFileName string = p.GetLocateDbDir() + "/db"
-  file, err := os.Create(indexFileName)
+  file, err := os.Create(filepath)
   file.Write( buf.Bytes() )
   file.Close()
 

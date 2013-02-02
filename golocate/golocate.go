@@ -36,6 +36,8 @@ func main() {
     db.SetVerbose()
   }
 
+  var indexFilepath string = db.GetLocateDbDir() + "/db"
+
   log.Println("Preparing golocate db structure...")
   db.PrepareStructure()
 
@@ -45,15 +47,19 @@ func main() {
     db.IgnoreString(".svn")
     db.IgnoreString(".hg")
     db.IgnoreString(".sass-cache")
-
     log.Println("Building index")
 
     for _ , path := range flag.Args() {
       db.AddSourcePath(path)
     }
+
     db.MakeIndex()
-    db.WriteIndexFile()
+
+    // write index to file
+    db.WriteIndexFile(indexFilepath)
   } else {
+    log.Println("Loading index...")
+    db.LoadIndexFile(indexFilepath)
     // search from index
   }
 
