@@ -6,13 +6,7 @@ import (
   "flag"
   "fmt"
   "log"
-  // "bufio"
 )
-
-func visit(path string, f os.FileInfo, err error) error {
-  fmt.Printf("Visited: %s %d\n", path, f.Size() )
-  return nil
-}
 
 func main() {
   var flagUpdate  *bool = flag.Bool("update",false,"Update index")
@@ -43,7 +37,9 @@ func main() {
   db.PrepareStructure()
 
   if *flagIndex {
+    log.Println("Building default ignore list...")
     db.IgnoreString(".DS_Store")
+    db.IgnoreString(".o")
     db.IgnoreString(".git")
     db.IgnoreString(".svn")
     db.IgnoreString(".hg")

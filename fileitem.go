@@ -7,7 +7,6 @@ import (
 type FileItem struct {
     Name string
     Path string // full path
-    // Size int64
 }
 
 func (p * FileItem) String() string {
