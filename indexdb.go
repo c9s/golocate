@@ -115,7 +115,8 @@ func (p * IndexDb) MakeIndex() {
     for fileitem = <-filepipe ; fileitem != nil ; {
       p.FileItems = append(p.FileItems,*fileitem)
       if p.verbose {
-        fmt.Printf("  Add\t%s %s\n", fileitem.Path, PrettySize( int(fileitem.Size) ) )
+        // fmt.Printf("  Add\t%s %s\n", fileitem.Path, PrettySize( int(fileitem.Size) ) )
+        fmt.Printf("  Add\t%s\n", fileitem.Path)
       }
       fileitem = <-filepipe
     }
@@ -157,7 +158,8 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
       return nil
     }
 
-    var fileitem FileItem = FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+    // var fileitem FileItem = FileItem{ Size: fi.Size(), Name: fi.Name(), Path: path }
+    var fileitem FileItem = FileItem{ Name: fi.Name(), Path: path }
     ch <- &fileitem
     return nil
   })
