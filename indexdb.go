@@ -172,7 +172,7 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
   file.Write( buf.Bytes() )
   file.Close()
 
-  log.Println("Done")
+  log.Printf("Done, %d files indexed.", len(p.FileItems) )
   return err
 }
 
