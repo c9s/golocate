@@ -74,6 +74,10 @@ func (p * IndexDb) SearchFile(pattern string) {
 
 }
 
+
+/*
+Make index from registered paths.
+*/
 func (p * IndexDb) MakeIndex() {
   var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
@@ -155,7 +159,11 @@ func (p * IndexDb) LoadIndexFile(filepath string) (error){
   return err
 }
 
-// write buffer to an index file
+/*
+Write indexdb object to file
+
+filepath string
+*/
 func (p * IndexDb) WriteIndexFile(filepath string) error {
   if p.verbose {
     log.Println("Writing index file...")

@@ -13,7 +13,6 @@ func visit(path string, f os.FileInfo, err error) error {
   return nil
 }
 
-
 func main() {
   var flagUpdate  *bool = flag.Bool("u",false,"Update index")
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
@@ -48,8 +47,8 @@ func main() {
     db.IgnoreString(".svn")
     db.IgnoreString(".hg")
     db.IgnoreString(".sass-cache")
-    log.Println("Building index")
 
+    log.Println("Building index")
     for _ , path := range flag.Args() {
       db.AddSourcePath(path)
     }
