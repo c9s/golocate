@@ -15,8 +15,9 @@ func visit(path string, f os.FileInfo, err error) error {
 
 
 func main() {
+  var flagUpdate  *bool = flag.Bool("u",false,"Update index")
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
-  var flagIndex *bool   = flag.Bool("i",false,"Create index file")
+  var flagIndex *bool   = flag.Bool("i",false,"Create index")
 
   flag.Usage = func() {
     fmt.Printf("Usage: --index", os.Args[0])
