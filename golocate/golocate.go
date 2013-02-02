@@ -66,15 +66,7 @@ func main() {
     db.WriteIndexFile(indexFilepath)
   } else {
     db.LoadIndexFile(indexFilepath)
-    // var out *bufio.Writer
-    // out = bufio.NewWriter(os.Stdout)
-    // search from index
-    // fmt.Printf( "%s\n", flag.Arg(0) )
     db.SearchString( flag.Arg(0) )
   }
-
-  _ = db
-  _ = flagIndex
-  // fmt.Printf("filepath.Walk() returned %v\n", err)
 }
 
