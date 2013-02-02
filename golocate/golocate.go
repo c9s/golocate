@@ -6,6 +6,7 @@ import (
   "flag"
   "fmt"
   "log"
+  // "bufio"
 )
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -66,7 +67,11 @@ func main() {
   } else {
     log.Println( "Loading index..." )
     db.LoadIndexFile(indexFilepath)
+    // var out *bufio.Writer
+    // out = bufio.NewWriter(os.Stdout)
     // search from index
+    // fmt.Printf( "%s\n", flag.Arg(0) )
+    db.SearchString( flag.Arg(0) )
   }
 
   _ = db

@@ -2,6 +2,7 @@ package golocate
 
 import (
   "regexp"
+  //"math"
   "strings"
   "bytes"
   "log"
@@ -84,10 +85,23 @@ func (p * IndexDb) PrepareStructure() error {
   return os.Mkdir( p.GetLocateDbDir() ,0777)
 }
 
-func (p * IndexDb) SearchFile(pattern string) {
+func (p * IndexDb) SearchString(str string) {
+  // split fileitems into chunks
 
+  var done = make(chan bool)
+  var size int = len(p.FileItems)
+  search := func(items []FileItem) {
+    for _, item := range(items) {
+      if strings.Contains(item.Path,str) {
+        fmt.Printf("%s\n",item.Path)
+      }
+    }
+    done <- true
+  }
+  go search(p.FileItems[ 0 : size / 2 ])
+  go search(p.FileItems[ size / 2 : size ])
+  <-done
 }
-
 
 /*
 Make index from registered paths.

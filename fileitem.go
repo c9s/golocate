@@ -6,8 +6,12 @@ import (
 
 type FileItem struct {
     Name string
-    Path string
+    Path string // full path
     Size int64
+}
+
+func (p * FileItem) String() string {
+  return p.Path
 }
 
 func ConcatFileItems(old1, old2 []FileItem) []FileItem {
