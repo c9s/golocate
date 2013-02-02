@@ -17,7 +17,7 @@ const (
 )
 
 type IndexDb struct {
-  createtime int32
+  CreateTime int32
   // paths []string
   FileItems []FileItem
   SourcePaths   []string
@@ -34,6 +34,8 @@ func (p * IndexDb) AddSourcePath(path string) {
 func (p * IndexDb) GetLocateDbDir() string {
   return os.Getenv("HOME") + "/" + LocateDbDirName
 }
+
+
 
 func (p * IndexDb) SetVerbose() {
   p.verbose = true
@@ -64,6 +66,18 @@ func (p * IndexDb) fileAcceptable(path string) bool {
     }
   }
   return true
+}
+
+func (p * IndexDb) EmptyFileItems() {
+  p.FileItems = []FileItem{}
+}
+
+func (p * IndexDb) ConcatFileItems(old2 []FileItem) []FileItem {
+  old1 := p.FileItems
+  newslice := make([]FileItem, len(old1) + len(old2))
+  copy(newslice, old1)
+  copy(newslice[len(old1):], old2)
+  return newslice
 }
 
 func (p * IndexDb) PrepareStructure() error {
@@ -171,7 +185,7 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
 
   var buf bytes.Buffer
   enc := gob.NewEncoder(&buf)
-  var encodeErr error = enc.Encode(p)
+  var encodeErr error = enc.Encode(*p)
   if encodeErr != nil {
     log.Fatal("encode error:", encodeErr)
   }

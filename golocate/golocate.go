@@ -58,9 +58,13 @@ func main() {
     // write index to file
     db.WriteIndexFile(indexFilepath)
   } else if (*flagUpdate) {
-    log.Println("Updating index...")
+    log.Println( "Updating index..." )
+    db.LoadIndexFile(indexFilepath)
+    db.EmptyFileItems()
+    db.MakeIndex()
+    db.WriteIndexFile(indexFilepath)
   } else {
-    log.Println("Loading index...")
+    log.Println( "Loading index..." )
     db.LoadIndexFile(indexFilepath)
     // search from index
   }
