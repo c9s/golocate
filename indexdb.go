@@ -212,3 +212,12 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
   return err
 }
 
+
+func (p * IndexDb) PrintInfo() {
+  fmt.Printf("Indexed files: %d\n", len(p.FileItems) )
+  fmt.Printf("Indexed paths:\n")
+  for _ , path := range p.SourcePaths {
+    fmt.Printf("  %s\n", path)
+  }
+}
+

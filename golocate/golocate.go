@@ -10,6 +10,7 @@ import (
 
 func main() {
   var flagUpdate  *bool = flag.Bool("update",false,"Update index")
+  var flagInfo    *bool = flag.Bool("info", false,"Show indexdb info")
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
   var flagIndex *bool   = flag.Bool("build",false,"Create index")
 
@@ -60,6 +61,9 @@ func main() {
     db.EmptyFileItems()
     db.MakeIndex()
     db.WriteIndexFile(indexFilepath)
+  } else if (*flagInfo) {
+    db.LoadIndexFile(indexFilepath)
+    db.PrintInfo()
   } else {
     db.LoadIndexFile(indexFilepath)
     db.SearchString( flag.Arg(0) )
