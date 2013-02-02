@@ -72,7 +72,7 @@ func (p * IndexDb) EmptyFileItems() {
   p.FileItems = []FileItem{}
 }
 
-func (p * IndexDb) ConcatFileItems(old2 []FileItem) []FileItem {
+func (p * IndexDb) AppendFileItems(old2 []FileItem) []FileItem {
   old1 := p.FileItems
   newslice := make([]FileItem, len(old1) + len(old2))
   copy(newslice, old1)
