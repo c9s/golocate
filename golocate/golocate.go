@@ -65,7 +65,6 @@ func main() {
     db.MakeIndex()
     db.WriteIndexFile(indexFilepath)
   } else {
-    log.Println( "Loading index..." )
     db.LoadIndexFile(indexFilepath)
     // var out *bufio.Writer
     // out = bufio.NewWriter(os.Stdout)
