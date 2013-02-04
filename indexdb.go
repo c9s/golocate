@@ -17,62 +17,37 @@ const (
   FilePipeBufferLength = 10
 )
 
+
 type IndexDb struct {
-  CreateTime int32
+  Dir string
+  Config IndexDbConfig
   // paths []string
   FileItems []FileItem
-  SourcePaths   []string
-  IgnoreFilenames []string
-  IgnoreStrings []string
-  IgnorePatterns []string
   verbose bool
 }
 
-func (p * IndexDb) AddSourcePath(path string) {
-  p.SourcePaths = append(p.SourcePaths, path)
-}
-
-func (p * IndexDb) GetLocateDbDir() string {
+func (p * IndexDb) GetDbDir() string {
+  if p.Dir != nil {
+    return p.Dir
+  }
   return os.Getenv("HOME") + "/" + LocateDbDirName
 }
 
-
+func (p * IndexDb) SetDbDir(path string) error {
+  p.Dir = path
+}
 
 func (p * IndexDb) SetVerbose() {
   p.verbose = true
 }
 
-func (p * IndexDb) IgnorePattern(pattern string) {
-  p.IgnorePatterns = append(p.IgnorePatterns,pattern)
-}
-
-func (p * IndexDb) IgnoreString(pattern string) {
-  p.IgnoreStrings = append(p.IgnoreStrings, pattern)
-}
-
-func (p * IndexDb) IgnoreFilename(filename string) {
-  p.IgnoreFilenames = append(p.IgnoreFilenames,filename)
-}
-
-func (p * IndexDb) fileAcceptable(path string) bool {
-  for _, str := range p.IgnoreStrings {
-    if strings.Contains(path,str) {
-      return false
-    }
-  }
-
-  for _, pattern := range p.IgnorePatterns {
-    if m, _ := regexp.MatchString(pattern, path); m {
-      return false
-    }
-  }
-  return true
-}
-
+/*
 func (p * IndexDb) EmptyFileItems() {
   p.FileItems = []FileItem{}
 }
+*/
 
+/*
 func (p * IndexDb) AppendFileItems(old2 []FileItem) []FileItem {
   old1 := p.FileItems
   newslice := make([]FileItem, len(old1) + len(old2))
@@ -80,9 +55,10 @@ func (p * IndexDb) AppendFileItems(old2 []FileItem) []FileItem {
   copy(newslice[len(old1):], old2)
   return newslice
 }
+*/
 
 func (p * IndexDb) PrepareStructure() error {
-  return os.Mkdir( p.GetLocateDbDir() ,0777)
+  return os.Mkdir( p.GetDbDir() ,0777)
 }
 
 func (p * IndexDb) SearchString(str string) {
@@ -146,7 +122,7 @@ func (p * IndexDb) MakeIndex() {
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
-    if ! p.fileAcceptable(path) {
+    if ! p.Config.IsFileAcceptable(path) {
 
       if p.verbose {
         fmt.Println("  Skip\t" + path)
@@ -164,6 +140,13 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   return  err
 }
 
+
+func (p * IndexDb) LoadIndexDb() error {
+  var configPath string = filepath.Join(p.GetDbDir(), "config" )
+  var dbPath string = filepath.Join(p.GetDbDir(), "db" )
+}
+
+/*
 func (p * IndexDb) LoadIndexFile(filepath string) (error){
   var buf bytes.Buffer
   var dec *gob.Decoder = gob.NewDecoder(&buf)
@@ -186,12 +169,14 @@ func (p * IndexDb) LoadIndexFile(filepath string) (error){
   }
   return err
 }
+*/
 
 /*
 Write indexdb object to file
 
 filepath string
 */
+/*
 func (p * IndexDb) WriteIndexFile(filepath string) error {
   if p.verbose {
     log.Println("Writing index file...")
@@ -211,7 +196,7 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
   log.Printf("Done, %d files indexed.", len(p.FileItems) )
   return err
 }
-
+*/
 
 func (p * IndexDb) PrintInfo() {
   fmt.Printf("Indexed files: %d\n", len(p.FileItems) )

@@ -32,7 +32,9 @@ func main() {
     db.SetVerbose()
   }
 
-  var indexFilepath string = db.GetLocateDbDir() + "/db"
+  var indexFilePath string = db.GetLocateDbDir() + "/db"
+
+  // db.SetDbDir( db.GetLocateDbDir() )
 
   log.Println("Preparing golocate db structure...")
   db.PrepareStructure()
@@ -54,18 +56,15 @@ func main() {
     db.MakeIndex()
 
     // write index to file
-    db.WriteIndexFile(indexFilepath)
+    // db.WriteIndexFile(indexFilePath)
   } else if (*flagUpdate) {
     log.Println( "Updating index..." )
-    db.LoadIndexFile(indexFilepath)
     db.EmptyFileItems()
     db.MakeIndex()
-    db.WriteIndexFile(indexFilepath)
+    db.WriteIndexFile(indexFilePath)
   } else if (*flagInfo) {
-    db.LoadIndexFile(indexFilepath)
     db.PrintInfo()
   } else {
-    db.LoadIndexFile(indexFilepath)
     db.SearchString( flag.Arg(0) )
   }
 }
