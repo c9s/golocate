@@ -40,6 +40,7 @@ func main() {
   if *flagIndex {
     log.Println("Building default ignore list...")
 
+    // Initialize indexdb
     db.Config = &golocate.IndexDbConfig{}
     db.Config.IgnoreString(".DS_Store")
     db.Config.IgnoreString(".o")

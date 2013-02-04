@@ -126,12 +126,14 @@ func (p * IndexDb) MakeIndex() {
   }
 
   // waiting for all goroutines finish
+  log.Println("Waiting for all GoRoutines to finish...")
   var waiting int = len(p.Config.SourcePaths)
   for ; waiting > 0 ; waiting-- {
     <-done
   }
   close(filepipe)
   <-done
+  log.Println("All GoRoutines are finished.")
 }
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
