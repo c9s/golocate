@@ -1,11 +1,11 @@
 package golocate
 
 import (
-  "regexp"
+  // "regexp"
   //"math"
-  "strings"
+  // "strings"
   "bytes"
-  "log"
+  // "log"
   "encoding/gob"
   "path/filepath"
   "os"
@@ -19,27 +19,42 @@ const (
 
 
 type IndexDb struct {
+
+  // The directory that contains index db and config
   Dir string
-  Config IndexDbConfig
+
+  // database path
+  DbPaths []string
+
+  // config object (which is encoded/decoded with Gob)
+  Config *IndexDbConfig
+
   // paths []string
-  FileItems []FileItem
+  // FileItems []FileItem
   verbose bool
 }
 
-func (p * IndexDb) GetDbDir() string {
-  if p.Dir != nil {
+func (p * IndexDb) GetDir() string {
+  if p.Dir != "" {
     return p.Dir
   }
   return os.Getenv("HOME") + "/" + LocateDbDirName
 }
 
-func (p * IndexDb) SetDbDir(path string) error {
+func (p * IndexDb) SetDbDir(path string) {
   p.Dir = path
 }
 
 func (p * IndexDb) SetVerbose() {
   p.verbose = true
 }
+
+func (p * IndexDb) PrepareStructure() error {
+  return os.Mkdir( p.GetDir() ,0777)
+}
+
+
+
 
 /*
 func (p * IndexDb) EmptyFileItems() {
@@ -57,10 +72,8 @@ func (p * IndexDb) AppendFileItems(old2 []FileItem) []FileItem {
 }
 */
 
-func (p * IndexDb) PrepareStructure() error {
-  return os.Mkdir( p.GetDbDir() ,0777)
-}
 
+/*
 func (p * IndexDb) SearchString(str string) {
   // split fileitems into chunks
 
@@ -78,10 +91,12 @@ func (p * IndexDb) SearchString(str string) {
   go search(p.FileItems[ size / 2 : size ])
   <-done
 }
+*/
 
 /*
 Make index from registered paths.
 */
+/*
 func (p * IndexDb) MakeIndex() {
   var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
@@ -119,6 +134,7 @@ func (p * IndexDb) MakeIndex() {
   close(filepipe)
   <-done
 }
+*/
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
@@ -140,11 +156,47 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   return  err
 }
 
+func (p * IndexDb) LoadIndexConfig(path string)  (*IndexDbConfig,error) {
+  // initialize a buffer object
+  var buf bytes.Buffer
+
+  // initialize gob decoder
+  var dec *gob.Decoder = gob.NewDecoder(&buf)
+
+  // open the config file
+  file, err := os.Open(path)
+  if err != nil {
+    return nil, err
+    // log.Fatal(err)
+  }
+
+  // decode from the content of the file.
+  _, err = buf.ReadFrom(file)
+  if err != nil {
+    return nil, err
+    // log.Fatal(err)
+  }
+
+  var config IndexDbConfig
+  err = dec.Decode(&config)
+  if err != nil {
+    return nil, err
+    // log.Fatal("decode error:", decodeErr)
+  }
+  return &config, err
+}
 
 func (p * IndexDb) LoadIndexDb() error {
-  var configPath string = filepath.Join(p.GetDbDir(), "config" )
-  var dbPath string = filepath.Join(p.GetDbDir(), "db" )
+  var err error
+  var configPath string = filepath.Join(p.GetDir(), "config" )
+  // XXX: should be able to add more db paths for searching
+  var dbPath string = filepath.Join(p.GetDir(), "db" )
+  p.DbPaths = append(p.DbPaths, dbPath)
+  p.Config, err = p.LoadIndexConfig(configPath)
+  return err
 }
+
+
 
 /*
 func (p * IndexDb) LoadIndexFile(filepath string) (error){
@@ -198,6 +250,7 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
 }
 */
 
+/*
 func (p * IndexDb) PrintInfo() {
   fmt.Printf("Indexed files: %d\n", len(p.FileItems) )
   fmt.Printf("Indexed paths:\n")
@@ -205,4 +258,5 @@ func (p * IndexDb) PrintInfo() {
     fmt.Printf("  %s\n", path)
   }
 }
+*/
 
