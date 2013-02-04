@@ -12,8 +12,6 @@ type IndexDbConfig struct {
   SourcePaths   []string
 }
 
-
-
 func (p * IndexDbConfig) AddSourcePath(path string) {
   p.SourcePaths = append(p.SourcePaths, path)
 }

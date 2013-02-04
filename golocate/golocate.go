@@ -32,8 +32,6 @@ func main() {
     db.SetVerbose()
   }
 
-  var indexFilePath string = db.GetLocateDbDir() + "/db"
-
   // db.SetDbDir( db.GetLocateDbDir() )
 
   log.Println("Preparing golocate db structure...")
@@ -41,16 +39,18 @@ func main() {
 
   if *flagIndex {
     log.Println("Building default ignore list...")
-    db.IgnoreString(".DS_Store")
-    db.IgnoreString(".o")
-    db.IgnoreString(".git")
-    db.IgnoreString(".svn")
-    db.IgnoreString(".hg")
-    db.IgnoreString(".sass-cache")
+
+    db.Config = &golocate.IndexDbConfig{}
+    db.Config.IgnoreString(".DS_Store")
+    db.Config.IgnoreString(".o")
+    db.Config.IgnoreString(".git")
+    db.Config.IgnoreString(".svn")
+    db.Config.IgnoreString(".hg")
+    db.Config.IgnoreString(".sass-cache")
 
     log.Println("Building index")
     for _ , path := range flag.Args() {
-      db.AddSourcePath(path)
+      db.Config.AddSourcePath(path)
     }
 
     db.MakeIndex()
@@ -59,13 +59,14 @@ func main() {
     // db.WriteIndexFile(indexFilePath)
   } else if (*flagUpdate) {
     log.Println( "Updating index..." )
-    db.EmptyFileItems()
+    db.Load()
+
     db.MakeIndex()
-    db.WriteIndexFile(indexFilePath)
+    // db.WriteIndexFile(indexFilePath)
   } else if (*flagInfo) {
-    db.PrintInfo()
+    // db.PrintInfo()
   } else {
-    db.SearchString( flag.Arg(0) )
+    // db.SearchString( flag.Arg(0) )
   }
 }
 

@@ -5,7 +5,7 @@ import (
   //"math"
   // "strings"
   "bytes"
-  // "log"
+  "log"
   "encoding/gob"
   "path/filepath"
   "os"
@@ -30,7 +30,7 @@ type IndexDb struct {
   Config *IndexDbConfig
 
   // paths []string
-  // FileItems []FileItem
+  FileItems []FileItem
   verbose bool
 }
 
@@ -96,7 +96,6 @@ func (p * IndexDb) SearchString(str string) {
 /*
 Make index from registered paths.
 */
-/*
 func (p * IndexDb) MakeIndex() {
   var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
@@ -114,7 +113,7 @@ func (p * IndexDb) MakeIndex() {
   }()
 
   var path string
-  for _ , path = range p.SourcePaths {
+  for _ , path = range p.Config.SourcePaths {
     log.Println("Building index from " + path)
     // Launch Goroutine
     go func(path string) {
@@ -127,14 +126,13 @@ func (p * IndexDb) MakeIndex() {
   }
 
   // waiting for all goroutines finish
-  var waiting int = len(p.SourcePaths)
+  var waiting int = len(p.Config.SourcePaths)
   for ; waiting > 0 ; waiting-- {
     <-done
   }
   close(filepipe)
   <-done
 }
-*/
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   var err error = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
@@ -186,7 +184,7 @@ func (p * IndexDb) LoadIndexConfig(path string)  (*IndexDbConfig,error) {
   return &config, err
 }
 
-func (p * IndexDb) LoadIndexDb() error {
+func (p * IndexDb) Load() error {
   var err error
   var configPath string = filepath.Join(p.GetDir(), "config" )
   // XXX: should be able to add more db paths for searching
@@ -195,6 +193,8 @@ func (p * IndexDb) LoadIndexDb() error {
   p.Config, err = p.LoadIndexConfig(configPath)
   return err
 }
+
+
 
 
 
