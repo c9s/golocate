@@ -4,6 +4,7 @@ import (
   // "regexp"
   //"math"
   // "strings"
+  "bufio"
   "bytes"
   "log"
   "encoding/gob"
@@ -73,25 +74,47 @@ func (p * IndexDb) AppendFileItems(old2 []FileItem) []FileItem {
 */
 
 
-/*
 func (p * IndexDb) SearchString(str string) {
-  // split fileitems into chunks
+  var dbPath string = p.GetDbPath()
+  var err error
+  var file *os.File
 
-  var done = make(chan bool)
-  var size int = len(p.FileItems)
-  search := func(items []FileItem) {
-    for _, item := range(items) {
-      if strings.Contains(item.Path,str) {
-        fmt.Printf("%s\n",item.Path)
-      }
-    }
-    done <- true
+  file, err = os.Open(dbPath)
+  if err != nil {
+    panic(err)
   }
-  go search(p.FileItems[ 0 : size / 2 ])
-  go search(p.FileItems[ size / 2 : size ])
-  <-done
+
+  var reader = bufio.NewReader(file)
+  var readLine = func() (string,error) {
+    var line []byte
+    var err error
+    var isPrefix bool = true
+    var ln []byte
+    for isPrefix && err == nil {
+      line, isPrefix, err = reader.ReadLine()
+      ln = append(ln, line...)
+    }
+    return string(ln), err
+  }
+
+  _ = readLine
+
+
+  // split fileitems into chunks
+//   var done = make(chan bool)
+//   var size int = len(p.FileItems)
+//   search := func(items []FileItem) {
+//     for _, item := range(items) {
+//       if strings.Contains(item.Path,str) {
+//         fmt.Printf("%s\n",item.Path)
+//       }
+//     }
+//     done <- true
+//   }
+//   go search(p.FileItems[ 0 : size / 2 ])
+//   go search(p.FileItems[ size / 2 : size ])
+//   <-done
 }
-*/
 
 /*
 Make index from registered paths.
@@ -107,7 +130,6 @@ func (p * IndexDb) MakeIndex() {
     if err != nil {
       panic("Can not open db file to write index.")
     }
-
 
     for fileitem = <-filepipe ; fileitem != nil ; {
       p.FileItems = append(p.FileItems,*fileitem)
