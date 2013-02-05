@@ -221,7 +221,6 @@ func (p * IndexDb) Load() error {
 func (p * IndexDb) Save() error {
   var err error
   p.SaveConfig(p.GetConfigPath(), p.Config)
-  // var configPath
 
   return err
 }
