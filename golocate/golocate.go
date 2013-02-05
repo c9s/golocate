@@ -61,13 +61,13 @@ func main() {
   } else if (*flagUpdate) {
     log.Println( "Updating index..." )
     db.Load()
-
     db.MakeIndex()
     // db.WriteIndexFile(indexFilePath)
   } else if (*flagInfo) {
     // db.PrintInfo()
   } else {
-    // db.SearchString( flag.Arg(0) )
+    db.Load()
+    db.SearchString( flag.Arg(0) )
   }
 }
 

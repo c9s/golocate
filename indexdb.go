@@ -3,7 +3,7 @@ package golocate
 import (
   // "regexp"
   //"math"
-  // "strings"
+  "strings"
   "bufio"
   "bytes"
   "log"
@@ -78,6 +78,8 @@ func (p * IndexDb) SearchString(str string) {
   var dbPath string = p.GetDbPath()
   var err error
   var file *os.File
+  var done chan bool = make(chan bool,5)
+  var filestream chan string = make(chan string, 20)
 
   file, err = os.Open(dbPath)
   if err != nil {
@@ -97,7 +99,37 @@ func (p * IndexDb) SearchString(str string) {
     return string(ln), err
   }
 
-  _ = readLine
+  // line matcher
+  var matcher = func() {
+    var line string
+    line = <-filestream
+    for line != "" {
+      line = <-filestream
+      if strings.Contains(line,str) {
+        fmt.Printf("%s\n",line)
+      }
+    }
+    done<-true
+  }
+
+  go matcher()
+  go matcher()
+
+  // line reader
+  go func() {
+    line, err := readLine()
+    for err == nil {
+      line , err = readLine()
+      filestream<-line
+    }
+    close(filestream)
+    done<-true
+  }()
+
+  <-done
+  <-done
+  <-done
+  log.Println("Done")
 
 
   // split fileitems into chunks
