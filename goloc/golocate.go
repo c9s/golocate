@@ -12,8 +12,9 @@ func main() {
   var flagUpdate  *bool = flag.Bool("update",false,"Update index")
   var flagInfo    *bool = flag.Bool("info", false,"Show indexdb info")
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
-  var flagIndex *bool   = flag.Bool("build",false,"Create index")
+  var flagIndex   *bool = flag.Bool("build",false,"Create index")
   var flagVersion *bool = flag.Bool("version",false,"Show golocate version")
+  var flagAddPath *string = flag.String("add","","Add new source path")
 
   flag.Usage = func() {
     fmt.Printf("Usage: --index", os.Args[0])
@@ -54,6 +55,10 @@ func main() {
     }
 
     db.MakeIndex()
+    db.Save()
+  } else if *flagAddPath != "" {
+    db.Load()
+    db.Config.AddSourcePath(*flagAddPath)
     db.Save()
   } else if *flagUpdate {
     log.Println( "Updating index..." )
