@@ -1,7 +1,7 @@
 package main
 
 import (
-  "golocate"
+  "github.com/c9s/golocate"
   "os"
   "flag"
   "fmt"
