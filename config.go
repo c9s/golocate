@@ -10,6 +10,7 @@ type IndexDbConfig struct {
   IgnoreStrings []string
   IgnorePatterns []string
   SourcePaths   []string
+  IndexedFiles  int
 }
 
 func (p * IndexDbConfig) AddSourcePath(path string) {

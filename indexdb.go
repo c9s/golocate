@@ -173,7 +173,6 @@ func (p * IndexDb) MakeIndex() {
       fileitem = <-filepipe
     }
     file.Close()
-
     done <- true
   }()
 
@@ -199,6 +198,8 @@ func (p * IndexDb) MakeIndex() {
   close(filepipe)
   <-done
   log.Println("All GoRoutines are finished.")
+
+  p.Config.IndexedFiles = len(p.FileItems)
 }
 
 func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
