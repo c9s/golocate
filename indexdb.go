@@ -326,13 +326,11 @@ func (p * IndexDb) WriteIndexFile(filepath string) error {
 }
 */
 
-/*
 func (p * IndexDb) PrintInfo() {
-  fmt.Printf("Indexed files: %d\n", len(p.FileItems) )
+  fmt.Printf("Indexed files: %d\n", p.Config.IndexedFiles)
   fmt.Printf("Indexed paths:\n")
-  for _ , path := range p.SourcePaths {
+  for _ , path := range p.Config.SourcePaths {
     fmt.Printf("  %s\n", path)
   }
 }
-*/
 

@@ -63,7 +63,8 @@ func main() {
   } else if *flagVersion {
     fmt.Printf( "Golocate v%s\n" , golocate.Version )
   } else if *flagInfo {
-    // db.PrintInfo()
+    db.Load()
+    db.PrintInfo()
   } else if flag.Arg(0) != "" {
     db.Load()
     db.SearchString( flag.Arg(0) )
