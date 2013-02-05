@@ -99,16 +99,26 @@ Make index from registered paths.
 func (p * IndexDb) MakeIndex() {
   var filepipe = make(chan *FileItem, FilePipeBufferLength )
   var done = make(chan bool, 5)
+  var dbPath = p.GetDbPath()
 
   go func() {
     var fileitem *FileItem
+    file, err := os.Create(dbPath)
+    if err != nil {
+      panic("Can not open db file to write index.")
+    }
+
+
     for fileitem = <-filepipe ; fileitem != nil ; {
       p.FileItems = append(p.FileItems,*fileitem)
       if p.verbose {
         fmt.Printf("  Add\t%s\n", fileitem.Path)
       }
+      file.Write( []byte(fileitem.Path + "\n") )
       fileitem = <-filepipe
     }
+    file.Close()
+
     done <- true
   }()
 
@@ -222,37 +232,16 @@ func (p * IndexDb) Save() error {
   var err error
   p.SaveConfig(p.GetConfigPath(), p.Config)
 
+//   file, err := os.Create(filepath)
+//   file.Write( buf.Bytes() )
+//   file.Close()
+//   log.Printf("Done, %d files indexed.", len(p.FileItems) )
   return err
 }
 
 
 
 
-
-/*
-func (p * IndexDb) LoadIndexFile(filepath string) (error){
-  var buf bytes.Buffer
-  var dec *gob.Decoder = gob.NewDecoder(&buf)
-
-  // var content []byte, err error = ioutil.ReadFile(filepath)
-  file, err := os.Open(filepath)
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  _, err = buf.ReadFrom(file)
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  // db := IndexDb{}
-  var decodeErr error = dec.Decode(p)
-  if decodeErr != nil {
-    log.Fatal("decode error:", decodeErr)
-  }
-  return err
-}
-*/
 
 /*
 Write indexdb object to file
