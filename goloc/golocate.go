@@ -58,7 +58,9 @@ func main() {
     db.Save()
   } else if *flagAddPath != "" {
     db.Load()
-    db.Config.AddSourcePath(*flagAddPath)
+    if db.Config.AddSourcePath(*flagAddPath) {
+      log.Printf("Path %s is added", *flagAddPath)
+    }
     db.Save()
   } else if *flagUpdate {
     log.Println( "Updating index..." )

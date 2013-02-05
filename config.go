@@ -13,8 +13,29 @@ type IndexDbConfig struct {
   IndexedFiles  int
 }
 
-func (p * IndexDbConfig) AddSourcePath(path string) {
+func (p * IndexDbConfig) TruncateDuplicateSourcePaths() {
+  // find duplicated paths
+  var pathMap = map[string] bool { }
+  for _, p1 := range p.SourcePaths {
+    pathMap[ p1 ] = true
+  }
+
+  p.SourcePaths = []string{}
+  for p1, _ := range pathMap {
+    p.SourcePaths = append(p.SourcePaths, p1)
+  }
+}
+
+func (p * IndexDbConfig) AddSourcePath(path string) bool {
+  p.TruncateDuplicateSourcePaths()
+
+  for _, p := range p.SourcePaths {
+    if p == path {
+      return false
+    }
+  }
   p.SourcePaths = append(p.SourcePaths, path)
+  return true
 }
 
 func (p * IndexDbConfig) IgnorePattern(pattern string) {
