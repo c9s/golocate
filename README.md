@@ -12,7 +12,7 @@ golocate uses separate goroutines to build/search index from custom paths, it's 
 
 ## Install
 
-    go get github.com/c9s/golocate
+    go get github.com/c9s/golocate/goloc
 
 ## Build index
 
