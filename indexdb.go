@@ -156,6 +156,20 @@ func (p * IndexDb) TraverseDirectory(root string, ch chan<- *FileItem) (error) {
   return  err
 }
 
+func (p * IndexDb) SaveConfig(path string, config *IndexDbConfig) error {
+  var buf bytes.Buffer
+  var enc *gob.Encoder = gob.NewEncoder(&buf)
+
+  var encodeErr error = enc.Encode(config)
+  if encodeErr != nil {
+    log.Fatal("encode error:", encodeErr)
+  }
+  file, err := os.Create(path)
+  file.Write( buf.Bytes() )
+  file.Close()
+  return err
+}
+
 func (p * IndexDb) LoadIndexConfig(path string)  (*IndexDbConfig,error) {
   // initialize a buffer object
   var buf bytes.Buffer
@@ -186,13 +200,29 @@ func (p * IndexDb) LoadIndexConfig(path string)  (*IndexDbConfig,error) {
   return &config, err
 }
 
+func (p * IndexDb) GetConfigPath() string {
+  return filepath.Join(p.GetDir(), "config")
+}
+
+func (p * IndexDb) GetDbPath() string {
+  return filepath.Join(p.GetDir(), "db" )
+}
+
 func (p * IndexDb) Load() error {
   var err error
-  var configPath string = filepath.Join(p.GetDir(), "config" )
+  var configPath string = p.GetConfigPath()
   // XXX: should be able to add more db paths for searching
-  var dbPath string = filepath.Join(p.GetDir(), "db" )
+  var dbPath string = p.GetDbPath()
   p.DbPaths = append(p.DbPaths, dbPath)
   p.Config, err = p.LoadIndexConfig(configPath)
+  return err
+}
+
+func (p * IndexDb) Save() error {
+  var err error
+  p.SaveConfig(p.GetConfigPath(), p.Config)
+  // var configPath
+
   return err
 }
 
