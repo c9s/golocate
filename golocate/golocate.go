@@ -55,14 +55,12 @@ func main() {
     }
 
     db.MakeIndex()
-
-    // write index to file
-    // db.WriteIndexFile(indexFilePath)
+    db.Save()
   } else if (*flagUpdate) {
     log.Println( "Updating index..." )
     db.Load()
     db.MakeIndex()
-    // db.WriteIndexFile(indexFilePath)
+    db.Save()
   } else if (*flagInfo) {
     // db.PrintInfo()
   } else {
