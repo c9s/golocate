@@ -13,6 +13,7 @@ func main() {
   var flagInfo    *bool = flag.Bool("info", false,"Show indexdb info")
   var flagVerbose *bool = flag.Bool("v",false,"Verbose output")
   var flagIndex *bool   = flag.Bool("build",false,"Create index")
+  var flagVersion *bool = flag.Bool("version",false,"Show golocate version")
 
   flag.Usage = func() {
     fmt.Printf("Usage: --index", os.Args[0])
@@ -33,8 +34,6 @@ func main() {
   }
 
   // db.SetDbDir( db.GetLocateDbDir() )
-
-  log.Println("Preparing golocate db structure...")
   db.PrepareStructure()
 
   if *flagIndex {
@@ -56,14 +55,16 @@ func main() {
 
     db.MakeIndex()
     db.Save()
-  } else if (*flagUpdate) {
+  } else if *flagUpdate {
     log.Println( "Updating index..." )
     db.Load()
     db.MakeIndex()
     db.Save()
-  } else if (*flagInfo) {
+  } else if *flagVersion {
+    fmt.Printf( "Golocate v%s\n" , golocate.Version )
+  } else if *flagInfo {
     // db.PrintInfo()
-  } else {
+  } else if flag.Arg(0) != "" {
     db.Load()
     db.SearchString( flag.Arg(0) )
   }
