@@ -16,18 +16,18 @@ golocate uses separate goroutines to build/search index from custom paths, it's 
 
 ## Build index
 
-    golocate -build ~/Desktop /usr/local/include /etc
+    goloc -build ~/Desktop /usr/local/include /etc
 
 To build index with verbose messages:
 
-    golocate -build -v ~/Desktop ~/Downloads
+    goloc -build -v ~/Desktop ~/Downloads
 
 ## Update index
 
-    golocate -update
+    goloc -update
 
 ## Search from indexdb
 
-    golocate [pattern]
+    goloc [pattern]
 
 
